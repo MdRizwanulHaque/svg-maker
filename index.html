@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image to SVG Converter</title>
+</head>
+
+<body>
+    <input type="file" id="imageFileInput" accept="image/*">
+    <button id="submitButton" disabled>Submit</button>
+    <div id="outputContainer"></div>
+
+    <script src="canvg.min.js"></script>
+    <script>
+        function convertImageToSVG(file) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var canvas = document.createElement('canvas');
+                    var context = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+
+                    var svgContainer = document.createElement('div');
+                    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                    svg.setAttribute('width', img.width);
+                    svg.setAttribute('height', img.height);
+                    svgContainer.appendChild(svg);
+
+                    canvg(svg, canvas.toDataURL());
+
+                    var outputContainer = document.getElementById('outputContainer');
+                    outputContainer.innerHTML = '';
+                    outputContainer.appendChild(svgContainer);
+
+                    var downloadLink = document.createElement('a');
+                    downloadLink.href = getSVGDataUrl(svgContainer.innerHTML);
+                    downloadLink.download = file.name.replace(/\.[^/.]+$/, "") + '.svg';
+                    downloadLink.innerHTML = 'Download SVG';
+
+                    outputContainer.appendChild(downloadLink);
+                };
+
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function getSVGDataUrl(svgContent) {
+            var svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            return URL.createObjectURL(svgBlob);
+        }
+
+        var imageFileInput = document.getElementById('imageFileInput');
+        var submitButton = document.getElementById('submitButton');
+
+        imageFileInput.addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            if (file) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        });
+
+        submitButton.addEventListener('click', function () {
+            var file = imageFileInput.files[0];
+            if (file) {
+                convertImageToSVG(file);
+            }
+        });
+    </script>
+</body>
+
+</html>
