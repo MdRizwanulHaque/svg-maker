@@ -6,8 +6,17 @@
 </head>
 
 <body>
-    <input type="file" id="imageFileInput" accept="image/*">
-    <button id="submitButton" disabled>Submit</button>
+
+    <div
+        style="display: flex;flex-direction: column; width:260px; padding:20px; border:1px solid gray; margin:200px auto; ">
+        <h2>Image to SVG Converter</h2>
+        <input type="file" id="imageFileInput" accept="image/*">
+        <p>Image will be downloaded into your download folder!</p>
+        <button id="submitButton" disabled>Submit</button>
+
+    </div>
+
+
 
     <script>
         function saveImageAsSVG(file) {
